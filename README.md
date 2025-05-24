@@ -34,6 +34,8 @@ df = pd.read_csv("vacancies_2020.csv", nrows=10000)
 ```
 и замените "vacancies_2020.csv" на путь к вашему датасету.
 
+Используемый датасет (2020 года) можно скачать [по ссылке](https://ieee-dataport.org/open-access/it-vacancies-hhru-2006-2020)
+
 4. **Запустите основной файл:**
 
   ```bash
