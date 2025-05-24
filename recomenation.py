@@ -4,6 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import gradio as gr
 from work_with_dataset import clean_text, craate_model, create_embeddings, remove_html_tags,load_df
 
+#Загружаем данные
 df = load_df()
 
 model = craate_model()
@@ -40,6 +41,7 @@ def recommend_vacancies(query, skills=None, top_k=50, min_salary=None, experienc
         ) | (results["description"].str.contains(regex_pattern, case=False))]
     return results.sort_values("similarity", ascending=False).head(top_k)
 
+# Предобработка зарплаты
 def format_salary(row):
     salary_from = row["salary_from"]
     salary_to = row["salary_to"]
@@ -54,7 +56,8 @@ def format_salary(row):
         return f"от {int(salary_from)} {currency}"
     elif pd.notna(salary_to):
         return f"до {int(salary_to)} {currency}"
-    
+
+# Поиск уникальных скиллов в датасете 
 def skills_un():
     unique_skills = (
     df['key_skills']              # Берем нужный столбец
@@ -67,6 +70,7 @@ def skills_un():
     )
     return unique_skills
 
+# Предобработка контактов
 def format_contacts(row):
     salary = row['contacts']
     if pd.isna(salary):
@@ -74,7 +78,15 @@ def format_contacts(row):
     else:
         return salary
 
+# Функция для вывода найденных вакансий по занным данным
 def search_jobs(query,  min_salary=None, experience=None,skills=None, num_vacancies=None):
+    '''
+    query = наименование вакансии,  
+    min_salary = минимальная зарплата,
+    experience = опыт работы,
+    skills = скиллы,
+    num_vacancies=количество вакансий для вывода
+    '''
     if experience == 'Любой':
         experience = None
     results = recommend_vacancies(query, skills=skills, min_salary=min_salary, experience=experience, top_k=num_vacancies)
@@ -114,6 +126,7 @@ def search_jobs(query,  min_salary=None, experience=None,skills=None, num_vacanc
     html += df_clear.to_html(escape=False, index=False)
     return html
 
+# Функция предобработки ошибки, если не введено название вакансии
 def process_query(query,min_salary, experience, skills, num_vacancies):
     if not query:
         raise gr.Error("Необходимо ввести наименование вакансии!")
